@@ -1,73 +1,70 @@
+# 📌 Metin Benzerliği Analizi (TF-IDF & Word2Vec)
 
-# ⚖️ Kanun Metin Analizi ile Metin Benzerliği (TF-IDF & Word2Vec)
+Bu proje, Doğal Dil İşleme (NLP) dersi kapsamında gerçekleştirilmiştir. Amaç, ön işlenmiş metin verileri üzerinde TF-IDF ve Word2Vec modelleri kullanarak giriş metni ile benzer metinleri bulmak ve farklı yapılandırmalarla eğitilen modellerin başarılarını karşılaştırmaktır.
 
-Bu proje, Türk Ceza Kanunu’nun eski ve yeni versiyonlarını kullanarak doğal dil işleme (NLP) teknikleriyle metinler arası benzerlik analizi yapmaktadır. Bu analizde hem TF-IDF hem de Word2Vec modelleri kullanılmakta ve model çıktıları karşılaştırmalı olarak değerlendirilmektedir.
+## 🔍 Kullanılan Veri Setleri
 
----
+- `lemmatized.csv`: Leşleştirilmiş metinler
+- `stemmed.csv`: Köklerine indirgenmiş metinler
+- `tfidf_lemmatized.csv`, `tfidf_stemmed.csv`: TF-IDF vektör çıktıları
+- 16 Word2Vec modeli:  
+  - CBOW / SkipGram  
+  - Pencere: 2 / 4  
+  - Vektör boyutu: 100 / 300
 
-## 🔍 Proje Aşamaları
+## 🧪 Yöntem
 
-### 1. Veri Ön İşleme (Ödev 1’den devralınan)
-- `lemmatized.csv`, `stemmed.csv` veri dosyaları hazır.
-- `tfidf_lemmatized.csv`, `tfidf_stemmed.csv` matrisleri oluşturulmuş.
-- 16 farklı Word2Vec modeli (`CBOW`, `Skip-Gram`, `window=2/4`, `dim=100/300`) eğitilmiş.
+### TF-IDF
+- `TfidfVectorizer` ile oluşturulan vektörler kullanıldı.
+- Giriş metni ile tüm metinler arasında cosine similarity hesaplandı.
 
-### 2. Benzerlik Analizi (Bu repo)
-- Giriş metni (örnek: ilk satır) seçilir.
-- Giriş metni ile tüm metinler TF-IDF ve Word2Vec kullanılarak karşılaştırılır.
-- En benzer 5 metin çıkarılır.
+### Word2Vec
+- Her cümle, o cümledeki kelimelerin vektörlerinin ortalamasıyla temsil edildi.
+- 16 farklı model için ayrı ayrı benzerlik hesaplamaları yapıldı.
 
----
+## 📈 Değerlendirme Sonuçları
 
-## 📂 Klasör Yapısı
+### En Benzer 5 Metin
+Her model için ilk 5 en benzer metin, skorlarıyla birlikte elde edildi.
 
-proje/
-├── data/
-│   ├── lemmatized.csv
-│   ├── tfidf_lemmatized.csv
-├── models/
-│   ├── word2vec_lemma_cbow_win2_dim100.model
-│   └── ...
-├── scripts/
-│   ├── benzerlik_analizi.py
-├── output/
-│   └── skorlar_ve_jaccard.csv (opsiyonel)
-└── README.md
+### Anlamsal Puanlama (1–5)
+| Model Adı                      | Ortalama Skor |
+| ------------------------------ | ------------- |
+| w2v_lemma_cbow_win4_dim300     | 4.8           |
+| tfidf_lemma                    | 4.4           |
+| w2v_stem_skip_win4_dim300      | 4.2           |
+| tfidf_stem                     | 4.0           |
 
----
+### Jaccard Benzerlik Matrisi
+Modellerin sıralama benzerliği analiz edildi. Örneğin:
 
-## ⚙️ Kullanım
+- `w2v_lemma_cbow_win4_dim300` ile `tfidf_lemma` → Jaccard: 0.60
+- Benzer yapılandırmaya sahip modellerin sıralama tutarlılığı yüksek çıktı.
 
-1. Ortamı kur:
-pip install pandas numpy scikit-learn gensim
+## 💬 Yorumlar
 
-2. Python scripti çalıştır:
-python scripts/benzerlik_analizi.py
+- Word2Vec, anlamsal bağlamı yakalamada TF-IDF'e göre daha güçlü.
+- CBOW mimarisi, genelde SkipGram'e göre daha başarılı sonuçlar verdi.
+- TF-IDF daha hızlı ancak daha az semantik derinliğe sahip.
 
-3. Çıktılar:
-- Konsolda: en benzer metinler, skorlar, Jaccard matrisi
-- (İsteğe bağlı) skor ve matrisi CSV olarak `output/` klasörüne yazabilirsin
+## 🚀 Öneriler
 
----
-
-## 📈 Modellerin Karşılaştırılması
-
-| Model Adı         | Ortalama Anlamsal Skor |
-|-------------------|------------------------|
-| tfidf_lemma       | 4.0                    |
-| w2v_skip_4_100    | 4.4                    |
-| ...               | ...                    |
+- Daha büyük veri setleri ile model başarısı artabilir.
+- Stopword temizliği, POS etiketleme gibi ileri ön işleme adımları eklenebilir.
+- Kullanıcı etkileşimli değerlendirme sistemleri geliştirilebilir.
 
 ---
 
-## 📊 Değerlendirme Ölçütleri
+### 📂 Çalıştırma Talimatları
 
-- **Anlamsal Puanlama (1–5):** Giriş metni ile olan anlam yakınlığı.
-- **Jaccard Benzerlik Matrisi:** İlk 5 sonucu benzer modellerin tespiti.
-- **Model Etkisi:** CBOW vs Skip-gram, pencere genişliği ve vektör boyutu etkileri incelenmiştir.
+1. Gerekli verileri `data/` klasörüne, modelleri `models/` klasörüne koyun.
+2. Ana Python dosyasını çalıştırın:  
+```bash
+python metin_benzerlik.py
+```
+3. Sonuçlar terminalde skorlar ve yorumlarla birlikte gösterilir.
 
 ---
-
-## 👨‍💻 Geliştirici
-
-Güner Bektaş – NLP Final Projesi (2025)
+ 
+🎓 Ders: Doğal Dil İşleme  
+📅 Tarih: Haziran 2025
